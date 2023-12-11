@@ -16,9 +16,6 @@ feedback_num = [12.33590000000000 -35.651984590000005 34.340092218032005  -11.02
 feedback_den = [1    -2.832900000000000    2.672854940000000    -0.839948725176000];
 fback_tf = tf(feedback_num,feedback_den,Ts);
 
-PD = pid(2,0,0.3,0);
-PD_tf = tf(PD)
-
 % Get state space values for ILC
 [Ag, Bg, Cg, Dg] = ssdata(plant_tf);
 [Ac, Bc, Cc, Dc] = ssdata(fback_tf);
