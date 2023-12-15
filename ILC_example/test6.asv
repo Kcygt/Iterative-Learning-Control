@@ -35,54 +35,33 @@ Uj = zeros(num_steps + 1 ,1);
 %ILC parameters
 Kp = 1;
 Kd = 10;
-iter = 2;
+iter = 10;
 Q = 1.0;
 L = 0.5;
 
 % IMC Simulation with input first through feedback
 
+for j = 1:iter
 
+    for k = 2:num_steps
+        
+        % ILC calculation
+        Uj(k) = Uold(k) + L * (Eold(k+1));
+        Uold(k) = Uj(k);  % Memory for Uj
+        
+        % Error calculation
+        Ej = (Yd(k) + Uj(k) - Yj(k-1));
+        Eold(k) = Ej;   % Memory for Ej
+        
+        % Feedback and Plant controller output
+        feedback_output = Cf * x_feedback(:, k) + Df * Ej;
+        Yj(k) = Cg * x_plant(:, k) + Dg * feedback_output;
 
-for k = 2:num_steps
-    
-    % ILC calculation
-    Uj(k) = 0;
-    
-   
-    % Error calculation
-    Ej = (Yd(k) + Uj(k) - Yj(k-1));
-       
-    % Feedback and Plant controller output
-    feedback_output = Cf * x_feedback(:, k) + Df * Ej;
-    Yj(k) = Cg * x_plant(:, k) + Dg * feedback_output;
-
-    % Update states for the next time step
-    x_feedback(:, k + 1) = Af * x_feedback(:, k) + Bf * Ej;
-    x_plant(:, k + 1) = Ag * x_plant(:, k) + Bg * feedback_output;
-    
-    Eold(k) = Ej;   % Memory for Ej
-    Uold(k) = Uj(k);  % Memory for Uj
-
+        % Update states for the next time step
+        x_feedback(:, k + 1) = Af * x_feedback(:, k) + Bf * Ej;
+        x_plant(:, k + 1) = Ag * x_plant(:, k) + Bg * feedback_output;
+    end
 end
-
-
-for k = 2:num_steps
-    
-    % ILC calculation
-    Uj(k) = Uold(k) + L * (Eold(k+1));
-   
-    % Error calculation
-    Ej = (Yd(k) + Uj(k) - Yj(k-1));
-    
-    % Feedback and Plant controller output
-    feedback_output = Cf * x_feedback(:, k) + Df * Ej;
-    Yj(k) = Cg * x_plant(:, k) + Dg * feedback_output;
-
-    % Update states for the next time step
-    x_feedback(:, k + 1) = Af * x_feedback(:, k) + Bf * Ej;
-    x_plant(:, k + 1) = Ag * x_plant(:, k) + Bg * feedback_output;
-end
-
 figure(2)
 plot(t,Yd,t,Yj)
 
