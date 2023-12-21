@@ -47,7 +47,7 @@ for j = 1:iter
       Wj(k) = Q * (Uj(k) + Kp * Eold(k+1) + Kd * (Eold(k+1) - Eold(k)));
 
       % Error calculation
-      Ej = (Yd(k) - Yj(k-1));
+      Ej = (Yd(k) - Wj(k) - Yj(k-1));
 
       % Feedback controller output
       feedback_output = Cf * x_feedback(:, k) + Df * Ej;
